@@ -1,0 +1,139 @@
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>AngularJS Datetime Rage Picker</title>
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css">
+
+	<!-- date time picker -->
+	<!-- <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/> -->
+	<link rel="stylesheet" type="text/css" href="css/daterangepicker.css" />
+
+	<script
+		src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+		integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+		crossorigin="anonymous"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.0/angular.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-animate/1.8.0/angular-animate.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-sanitize/1.8.0/angular-sanitize.min.js"></script>
+
+	<!-- date time picker -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+	<script type="text/javascript" src="js/daterangepicker.js"></script>
+
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<script>
+		var epcsales = angular.module('epcsales_test', ['ngAnimate', 'ngSanitize']);
+		
+		epcsales.controller('inputCtrl', function($scope) {
+			// when click the calendar icon button, perform the picker function
+			$scope.dateTimePicker = function() {
+				$('#dateTimeInput').click();
+			};
+
+			// after insert by text and out focus, refresh the result set by auto enter the hidden button
+			$scope.confirmDateTime = function() {
+				$('confirmButton').click();
+			}
+
+			// data time picker
+			$(function () {
+				$('#dateTimeInput').daterangepicker({
+					timePicker: true,
+					timePicker24Hour: true,
+					timePickerSeconds: true,
+					startDate: moment().startOf('hour'),
+					endDate: moment().startOf('hour').add(6, 'day'),
+					opens: 'left',
+					locale: {
+						format: 'YYYY-MM-DD HH:mm:ss',
+						separator: ' - ',
+					}
+				}, function(start, end, label) {
+					console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+
+					// result set
+					$scope.selectedDateTime = start.format('YYYY-MM-DD HH:mm:ss') + " - " + end.format('YYYY-MM-DD HH:mm:ss');
+					$scope.startDateTime = start.format('YYYY-MM-DD HH:mm:ss');
+					$scope.startDate = start.format('YYYY-MM-DD');
+					$scope.startYear = start.format('YYYY');
+					$scope.startMonth = start.format('MM');
+					$scope.startDay = start.format('DD');
+					$scope.startTime = start.format('HH:mm:ss');
+					$scope.startHour = start.format('HH');
+					$scope.startMinute = start.format('mm');
+					$scope.startSecond = start.format('ss');
+
+					$scope.endDateTime = end.format('YYYY-MM-DD HH:mm:ss');
+					$scope.endDate = end.format('YYYY-MM-DD');
+					$scope.endYear = end.format('YYYY');
+					$scope.endMonth = end.format('MM');
+					$scope.endDay = end.format('DD');
+					$scope.endTime = end.format('HH:mm:ss');
+					$scope.endHour = end.format('HH');
+					$scope.endMinute = end.format('mm');
+					$scope.endSecond = end.format('ss');
+				});
+			});
+		});
+
+		// detect the press enter key event for the date time textbox
+		epcsales.directive('ngEnter', function () {
+			return function (scope, element, attrs) {
+				element.bind("keydown keypress", function (event) {
+					if (event.which === 13) {
+						scope.$apply(function (){
+							scope.$eval(attrs.ngEnter);
+						});
+
+						$('confirmButton').click();
+					}
+				});
+			};
+		});
+	</script>
+</head>
+
+<body ng-app="epcsales_test">
+	<div class="container">
+		<div class="row m-4" ng-controller="inputCtrl as $ctrl">
+			<div class="input-group mb-3">
+				<input type="text" class="form-control" id="dateTimeInput" ng-model="dateTime" ng-blur="confirmDateTime();" ng-enter="enter();" aria-label="MSISDN" aria-describedby="basic-addon2" />
+				<div class="input-group-append">
+					<!-- after insert by text, must enter the confirm button for refresh -->
+					<button type="button" id="comfirmButton" ng-click="" style="display: none;"></button>
+					<button type="button" class="btn btn-outline-secondary" id="dateTimeButton" ng-click="dateTimePicker();">
+						<i class="fa fa-calendar"></i>
+					</button>
+				</div>
+			</div>
+	
+			<p>
+				<!-- result set after selected, those variables can use in javascript -->
+				<b>Result set after selected</b> <br/>
+				Output date time: {{ selectedDateTime }} <br><br />
+				Start date time: {{ startDateTime }} <br />
+				Start date: {{ startDate }} <br />
+				Y = {{ startYear }} , M = {{ startMonth }} , D = {{ startDay }} <br />
+				Start time: {{ startTime }} <br />
+				H = {{ startHour }} , M = {{ startMinute }} , S = {{ startSecond }}
+				
+				<br><br />
+
+				End date time: {{ endDateTime }} <br />
+				End date: {{ endDate }} <br />
+				Y = {{ endYear }} , M = {{ endMonth }} , D = {{ endDay }} <br />
+				End time: {{ endTime }} <br />
+				H = {{ endHour }} , M = {{ endMinute }} , S = {{ endSecond }}
+			</p>
+		</div>
+	</div>
+</body>
+
+</html>
